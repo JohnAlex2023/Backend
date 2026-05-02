@@ -50,4 +50,30 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login };
+//registrar admin
+const registerAdmin = async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body;
+    const existing = await User.findOne({ email });
+    if (existing) throw new AppError('Email ya registrado', 400);
+
+    const user = await User.create({ name, email, password, role: 'admin' });
+    const token = generateToken(user._id);
+
+    res.status(201).json({
+      success: true,
+      token,
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login, registerAdmin };
+

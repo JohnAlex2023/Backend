@@ -37,4 +37,18 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError(
+          `El rol '${req.user.role}' no tiene permiso para realizar esta acción`,
+          403
+        )
+      );
+    }
+    next();
+  };
+};
+
+module.exports = { protect, authorize };

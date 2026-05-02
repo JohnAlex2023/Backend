@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/users.controller');
-const { protect } = require('../middlewares/auth');
+const { protect, authorize } = require('../middlewares/auth');
 const {
   createUserRules,
   updateUserRules,
@@ -18,6 +18,6 @@ router.route('/')
 router.route('/:id')
   .get(userController.getById)
   .put(updateUserRules, validate, userController.update)
-  .delete(userController.remove);
+  .delete(authorize('admin'), userController.remove);
 
 module.exports = router;
